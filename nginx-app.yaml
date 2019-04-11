@@ -1,0 +1,32 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  annotations:
+    kubernetes.io/change-cause: "Updated to 1.15.0"
+  labels:
+    run: nginx-app
+  name: nginx-app
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      run: web-app-dp
+  minReadySeconds: 5
+  revisionHistoryLimit: 2
+  strategy:
+    rollingUpdate:
+      maxSurge: 20%
+      maxUnavailable: 20%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        run: nginx-app
+    spec:
+      containers:
+      - image: ikambarov/nginx-app:1.15.0
+        name: nginx-app
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
